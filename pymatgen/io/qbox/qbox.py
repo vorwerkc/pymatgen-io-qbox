@@ -94,7 +94,7 @@ class QboxInput(MSONable):
                 val = True
                 break
         return val
-    
+
     @classmethod
     def from_string(cls, string):
         """
@@ -105,7 +105,7 @@ class QboxInput(MSONable):
         """
 
         inputlist = string.splitlines()
-        
+
         # species and coordinates of each atomic site
         species_ = []
         coords_ = []
@@ -117,7 +117,7 @@ class QboxInput(MSONable):
         # intermediate pseudo_ list used to construct the site_properties for
         # the Structure object
         pseudos_ = []
-        
+
         # first loop over lines to find lattice and all pseudopotentials
         for line in inputlist:
             if "set" in line.split() and "cell" in line.split():
@@ -126,7 +126,7 @@ class QboxInput(MSONable):
                 c = [float(entry) * bohr_in_A for entry in line.split()[8:11]]
                 lattice_ = Lattice([a, b, c])
 
-            if line.split()[0] == "species":
+            if "species" in line.split():
                 if Element.is_valid_symbol(line.split()[1]):
                     element_ = Element(line.split()[1])
                 elif QboxInput._is_valid_long_name(line.split()[1]):
