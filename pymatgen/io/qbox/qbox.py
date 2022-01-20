@@ -94,15 +94,18 @@ class QboxInput(MSONable):
                 val = True
                 break
         return val
-
+    
     @classmethod
-    def from_file(cls, file):
+    def from_string(cls, string):
         """
-        Read QboxInput object from file.
+        Read QboxInput object from string.
 
         Args:
-            file (str) :: filename.
+            string (str) :: multiline string of the input file.
         """
+
+        inputlist = string.splitlines()
+        
         # species and coordinates of each atomic site
         species_ = []
         coords_ = []
@@ -114,41 +117,51 @@ class QboxInput(MSONable):
         # intermediate pseudo_ list used to construct the site_properties for
         # the Structure object
         pseudos_ = []
-        with open(file, "r") as f:
-            # first loop over lines to find lattice and all pseudopotentials
-            for line in f.readlines():
-                if "set" in line.split() and "cell" in line.split():
-                    a = [float(entry) * bohr_in_A for entry in line.split()[2:5]]
-                    b = [float(entry) * bohr_in_A for entry in line.split()[5:8]]
-                    c = [float(entry) * bohr_in_A for entry in line.split()[8:11]]
-                    lattice_ = Lattice([a, b, c])
+        
+        # first loop over lines to find lattice and all pseudopotentials
+        for line in inputlist:
+            if "set" in line.split() and "cell" in line.split():
+                a = [float(entry) * bohr_in_A for entry in line.split()[2:5]]
+                b = [float(entry) * bohr_in_A for entry in line.split()[5:8]]
+                c = [float(entry) * bohr_in_A for entry in line.split()[8:11]]
+                lattice_ = Lattice([a, b, c])
 
-                if line.split()[0] == "species":
-                    if Element.is_valid_symbol(line.split()[1]):
-                        element_ = Element(line.split()[1])
-                    elif QboxInput._is_valid_long_name(line.split()[1]):
-                        element_ = QboxInput._element_from_long_name(line.split()[1])
+            if line.split()[0] == "species":
+                if Element.is_valid_symbol(line.split()[1]):
+                    element_ = Element(line.split()[1])
+                elif QboxInput._is_valid_long_name(line.split()[1]):
+                    element_ = QboxInput._element_from_long_name(line.split()[1])
 
-                    pseudos[element_.symbol] = line.split()[-1]
-                    species_map[line.split()[1]] = element_.symbol
+                pseudos[element_.symbol] = line.split()[-1]
+                species_map[line.split()[1]] = element_.symbol
 
-            # second loop over lines to obtain atomic positions and assign
-            # pseudos
-            # go back to beginning of file
-            f.seek(0)
-            for line in f.readlines():
-                if "atom" in line.split():
-                    if Element.is_valid_symbol(line.split()[2]):
-                        species_.append(Element(line.split()[2]))
-                    elif QboxInput._is_valid_long_name(line.split()[2]):
-                        species_.append(QboxInput._element_from_long_name(line.split()[2]))
+        # second loop over lines to obtain atomic positions and assign
+        # pseudos
+        for line in inputlist:
+            if "atom" in line.split():
+                if Element.is_valid_symbol(line.split()[2]):
+                    species_.append(Element(line.split()[2]))
+                elif QboxInput._is_valid_long_name(line.split()[2]):
+                    species_.append(QboxInput._element_from_long_name(line.split()[2]))
 
-                    coords_.append([float(entry) * bohr_in_A for entry in line.split()[3:6]])
-                    pseudos_.append(pseudos[species_map[line.split()[2]]])
+                coords_.append([float(entry) * bohr_in_A for entry in line.split()[3:6]])
+                pseudos_.append(pseudos[species_map[line.split()[2]]])
 
         site_props = {"pseudo": pseudos_}
         structure = Structure(lattice_, species_, coords_, site_properties=site_props, coords_are_cartesian=True)
         return cls(structure, pseudos)
+
+    @classmethod
+    def from_file(cls, file):
+        """
+        Read QboxInput object from file.
+
+        Args:
+            file (str) :: filename.
+        """
+        inputstring = Path(file).read_text()
+
+        return QboxInput.from_string(inputstring)
 
     def __str__(self):
 
