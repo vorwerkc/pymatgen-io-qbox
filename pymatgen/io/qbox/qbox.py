@@ -21,12 +21,13 @@ __email__ = "vorwerk@uchicago.edu"
 __status__ = "Development"
 __date__ = "Dec 22, 2021"
 
-bohr_in_A = const.value('Bohr radius') / 10**(-10)
+bohr_in_A = const.value("Bohr radius") / 10 ** (-10)
 
 # Loads element data from json file
 # Same data as used in pymatgen.core.Element
 with open(str(Path(__file__).absolute().parent / "periodic_table.json")) as f:
     _pt_data = json.load(f)
+
 
 class QboxInput(MSONable):
     """
@@ -115,16 +116,16 @@ class QboxInput(MSONable):
         # intermediate pseudo_ list used to construct the site_properties for
         # the Structure object
         pseudos_ = []
-        with open(file, 'r') as f:
+        with open(file, "r") as f:
             # first loop over lines to find lattice and all pseudopotentials
             for line in f.readlines():
-                if 'set' in line.split() and 'cell' in line.split():
-                    a = [float(entry)*bohr_in_A for entry in line.split()[2:5]]
-                    b = [float(entry)*bohr_in_A for entry in line.split()[5:8]]
-                    c = [float(entry)*bohr_in_A for entry in line.split()[8:11]]
+                if "set" in line.split() and "cell" in line.split():
+                    a = [float(entry) * bohr_in_A for entry in line.split()[2:5]]
+                    b = [float(entry) * bohr_in_A for entry in line.split()[5:8]]
+                    c = [float(entry) * bohr_in_A for entry in line.split()[8:11]]
                     lattice_ = Lattice([a, b, c])
 
-                if line.split()[0] == 'species':
+                if line.split()[0] == "species":
                     if Element.is_valid_symbol(line.split()[1]):
                         element_ = Element(line.split()[1])
                     elif QboxInput._is_valid_long_name(line.split()[1]):
@@ -138,42 +139,41 @@ class QboxInput(MSONable):
             # go back to beginning of file
             f.seek(0)
             for line in f.readlines():
-                if 'atom' in line.split():
+                if "atom" in line.split():
                     if Element.is_valid_symbol(line.split()[2]):
                         species_.append(Element(line.split()[2]))
                     elif QboxInput._is_valid_long_name(line.split()[2]):
                         species_.append(QboxInput._element_from_long_name(line.split()[2]))
 
-                    coords_.append([float(entry)*bohr_in_A for entry in line.split()[3:6]])
+                    coords_.append([float(entry) * bohr_in_A for entry in line.split()[3:6]])
                     pseudos_.append(pseudos[species_map[line.split()[2]]])
 
-        site_props = {'pseudo': pseudos_}
-        structure = Structure(lattice_, species_, coords_, site_properties=
-                site_props, coords_are_cartesian= True)
+        site_props = {"pseudo": pseudos_}
+        structure = Structure(lattice_, species_, coords_, site_properties=site_props, coords_are_cartesian=True)
         return cls(structure, pseudos)
 
     def __str__(self):
 
         # set structure
-        string = 'set cell '
+        string = "set cell "
         for vector in self.structure.lattice._matrix.tolist():
             for entry in vector:
-                string += str(entry/bohr_in_A)+' '
-        string += '\n'
+                string += str(entry / bohr_in_A) + " "
+        string += "\n"
 
         # add pseudopotential
         if self.pseudos is not None:
             for key in self.pseudos.keys():
-                string += 'species '+str(key)+' '+ self.pseudos[key] + '\n'
+                string += "species " + str(key) + " " + self.pseudos[key] + "\n"
 
         # add atoms
         i = 0
         for site in self.structure.sites:
             i += 1
-            string += 'atom '+site.species.elements[0].symbol+str(i) + ' ' + site.species_string + ' '
+            string += "atom " + site.species.elements[0].symbol + str(i) + " " + site.species_string + " "
             for entry in site.coords:
-                string += str(entry/bohr_in_A) + ' '
-            string += '\n'
+                string += str(entry / bohr_in_A) + " "
+            string += "\n"
 
         return string
 
