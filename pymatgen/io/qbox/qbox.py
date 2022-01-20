@@ -6,9 +6,7 @@ Classes for reading/manipulating/writing qbox input files.
 """
 import json
 from pathlib import Path
-import numpy as np
 import scipy.constants as const
-from monty.io import zopen
 from monty.json import MSONable
 
 from pymatgen.core import Structure, Element, Lattice
