@@ -19,7 +19,7 @@ atom Li3 Li+ 1.895567966945247 1.3930683045817498 2.986908160656887
 
         self.assertEqual(qbox.__str__(), ans)
 
-    def test_read_str(unittest.Testcase):
+    def test_read_str(self):
         string = """set cell    20.52 0 0  0 20.52 0  0 0 20.52
 species silicon Si_VBC_LDA-1.0.xml
 atom Si01 silicon   -10.260000   -10.260000   -10.260000
@@ -158,14 +158,14 @@ atom Si64 silicon     7.695000     2.565000     7.695000
                  [ 4.07201864,  1.35733955,  4.07201864]]
             ])
 
-            qbox = QboxInput.from_string(string)
+        qbox = QboxInput.from_string(string)
 
-            # generate array of site coordinates
-            qbox_sites = []
-            for site in qbox.structure.sites:
-                qbox_sites.append(list(site.coords))
-            qbox_sites = np.array(qbox_sites)
+        # generate array of site coordinates
+        qbox_sites = []
+        for site in qbox.structure.sites:
+            qbox_sites.append(list(site.coords))
+        qbox_sites = np.array(qbox_sites)
 
-            np.testing.assert_allclose(sites, qbox_sites)
+        np.testing.assert_allclose(sites, qbox_sites)
 
-            np.testing.assert_allclose(lattice, qbox.structure.lattice.matrix)
+        np.testing.assert_allclose(lattice, qbox.structure.lattice.matrix)
