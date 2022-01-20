@@ -1,8 +1,8 @@
-Pymatgen-analysis-myaddon
+Pymatgen-io-qbox
 =========================
 
-This is a (pymatgen)[https://pymatgen.org/] addon to parse input files for the
-first-principles molecular dynamics code (qbox)[qboxcode.org]. The addon is
+This is a [pymatgen](https://pymatgen.org/) addon to parse input files for the
+first-principles molecular dynamics code [qbox](qboxcode.org). The addon is
 under active development and currently allows only for basic IO features. These
 include:
 
@@ -13,7 +13,7 @@ include:
 Installation
 ============
 
-Once pymatgen is installed (see (here)[https://pymatgen.org/installation.html]),
+Once pymatgen is installed (see [here](https://pymatgen.org/installation.html)),
 the addon is installed by
 
 ```
