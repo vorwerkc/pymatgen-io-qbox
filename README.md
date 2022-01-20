@@ -50,7 +50,7 @@ qbox.write_file('example.i')
 Alternatively, the object can be created from file and can be used to extract
 the structure from the qbox input file
 
-```
+```python
 from pymatgen.io.qbox import QboxInput
 
 # create qbox input from file
