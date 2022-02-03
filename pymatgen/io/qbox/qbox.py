@@ -169,7 +169,7 @@ class QboxInput(MSONable):
         string = "set cell "
         for vector in self.structure.lattice._matrix.tolist():
             for entry in vector:
-                string += str(entry / bohr_in_A) + " "
+                string += "{:10.6f}".format(entry / bohr_in_A) + " "
         string += "\n"
 
         # add pseudopotential
@@ -183,7 +183,7 @@ class QboxInput(MSONable):
             i += 1
             string += "atom " + site.species.elements[0].symbol + str(i) + " " + site.species_string + " "
             for entry in site.coords:
-                string += str(entry / bohr_in_A) + " "
+                string += "{:10.6f}".format(entry / bohr_in_A) + " "
             string += "\n"
 
         return string
